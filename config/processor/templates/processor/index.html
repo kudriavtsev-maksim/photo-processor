@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сервис обработки изображений</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .upload-form {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .loading {
+            display: none;
+            margin-top: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Сервис обработки изображений</h1>
+    
+    <div class="upload-form">
+        <h2>Загрузить изображение</h2>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Загрузить и обработать</button>
+        </form>
+        <div id="single-loading" class="loading">Загрузка и обработка... (~20 секунд)</div>
+        
+        <h2>Тестирование сервиса</h2>
+        <form id="multi-upload-form" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Отправить 100 файлов разом</button>
+        </form>
+        <div id="multi-loading" class="loading">Запущена обработка 100 файлов...</div>
+    </div>
+    
+    <h2>Результаты обработки</h2>
+    <table id="results-table">
+        <thead>
+            <tr>
+                <th>Имя файла</th>
+                <th>Результат (1-1000)</th>
+                <th>Время загрузки</th>
+                <th>Время обработки (сек)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for image in images %}
+            <tr>
+                <td>{{ image.original_filename }}</td>
+                <td>{{ image.result_number }}</td>
+                <td>{{ image.upload_time }}</td>
+                <td>{{ image.processing_time|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Пока нет обработанных изображений</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const loadingDiv = document.getElementById('single-loading');
+            loadingDiv.style.display = 'block';
+            
+            const formData = new FormData(this);
+            
+            fetch('/upload/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setTimeout(() => {
+                    location.reload();
+                }, 21000); // Перезагружаем страницу через 21 секунду
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loadingDiv.style.display = 'none';
+            });
+        });
+
+        document.getElementById('multi-upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const loadingDiv = document.getElementById('multi-loading');
+            loadingDiv.style.display = 'block';
+            
+            const formData = new FormData(this);
+            
+            fetch('/upload-multiple/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Не перезагружаем страницу автоматически, так как обработка 100 файлов займет много времени
+                alert('Запущена обработка 100 файлов. Обновите страницу через некоторое время, чтобы увидеть результаты.');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loadingDiv.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
