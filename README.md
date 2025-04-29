@@ -21,16 +21,17 @@ Django-сервис для загрузки и обработки изображ
 ## Установка и запуск
 
 1. Клонируйте репозиторий:
-git clone https://github.com/kudriavtsev-maksim/photo-processor.git
-cd photo-processor
+- git clone https://github.com/kudriavtsev-maksim/photo-processor.git
+- cd photo-processor
 2. Установите зависимости:
-pip install -r requirements.txt
+- pip install -r requirements.txt
 3. Выполните миграции:
-python manage.py makemigrations
-python manage.py migrate
+- python manage.py makemigrations
+- python manage.py migrate
 4. Запустите сервер:
-python manage.py runserver
-5.Откройте в браузере: http://127.0.0.1:8000/
+- python manage.py runserver
+5.Откройте в браузере: 
+- http://127.0.0.1:8000/
 
 ## Использование
 
