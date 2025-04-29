@@ -14,7 +14,7 @@ def process_image(image_path, original_filename):
     start_time = time.time()
     
     
-    time.sleep(20)
+    time.sleep(10)
     
     
     result = random.randint(1, 1000)
